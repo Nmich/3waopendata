@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        title OpenData 3wa
+        link(rel="stylesheet", href="css/styles.css")
+    body
+        div.page-header
+            h1 Bonjour #{message}
+        nav.navbar-text.navbar-right
+            div.container-fluid
+                div.navbar-header
+                    button(class="navbar-toggle collapsed" type="button"  data-toggle="collapse"  data-target="#bs-example-navbar-collapse-1" aria-expanded="false")
+                        span.sr-only
+                        span.icon-bar
+                        span.icon-bar
+                        span.icon-bar
+                        a(class="navbar-brand" href="#")
+                div.collapse.navbar-collapse#bs-example-navbar-collapse-1
+                    ul(class="nav navbar-nav")
+                        li
+                            form(class="navbar-form navbar-left")
+                                div(class="form-group")
+                                        a(class="btn" href="/login") Connexion
+                                        a(class="btn" href="/signup") Inscription
+        div.clearfix
+        div.container
+        block content
