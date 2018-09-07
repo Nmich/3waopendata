@@ -20,11 +20,12 @@ const UserSchema = mongoose.Schema({
             },
             message: 'L\'adresse email {VALUE} n\'est pas une adresse RFC valide'
         },
-        required: [true, 'Le champs "email" est obligatoire']
+      //  required: [true, 'Le champs "email" est obligatoire']
     },
 
-    salt: { type: String, required: true },
-    hash: { type: String, required: true }
+    salt: { type: String },
+    hash: { type: String },
+    githubId: { type: String }
 });
 
 /*
@@ -80,6 +81,42 @@ UserSchema.statics.signup = function(firstname, lastname, email, pass, pass_conf
 
     
 };
+UserSchema.statics.verifyPass = function(passwordInClear, userObject) {
+    const userSalt = userObject.salt;
+    const userHash = userObject.hash;
+    
+    return hash(passwordInClear, userSalt).then((data) =>{
+        if (data.hash === userHash) {
+            return Promise.resolve(userObject)
+        }else{
+            return Promise.reject(new Error('Mot de passe invalide !'))
+        }
+    });
+}
 
+/*
+    Ajout d'une méthode permettant de récupérer (ou d'inscrire si inexistant) un utilisateur
+    qui s'est loggué via Github
+*/
+
+UserSchema.statics.signupViaGithub = function(profile) {
+
+    // Recherche si cet utilisateur (loggué via Github) n'est pas déjà dans notre base mongo ?
+    return this.findOne({ 'githubId' : profile.id })
+        .then(user => {
+            // Non ! Donc on l'inscrit dans notre base..
+            if (user === null) {
+                const [firstname, lastname] = profile.displayName.split(' ');
+                return this.create({
+                    githubId : profile.id,
+                    firstname : firstname || '',
+                    lastname : lastname || '',
+                    avatarUrl : profile.photos[0].value // Photo par défaut de l'user Github
+                });
+            }
+            // On renvoie l'utilisateur final
+            return user;
+        });
+}
 // Export du Modèle mongoose représentant un objet User
 module.exports = mongoose.model('User', UserSchema);
